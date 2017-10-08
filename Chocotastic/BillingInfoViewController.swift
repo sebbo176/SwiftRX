@@ -32,7 +32,11 @@ class BillingInfoViewController: UIViewController {
   @IBOutlet private var cvvTextField: ValidatingTextField!
   @IBOutlet private var purchaseButton: UIButton!
   
+  //MARK: - Private Properties
+  
   private let cardType: Variable<CardType> = Variable(.Unknown)
+  private let disposeBag = DisposeBag()
+  private let throttleInterval = 0.1
   
   //MARK: - View Lifecycle
   
@@ -58,6 +62,29 @@ class BillingInfoViewController: UIViewController {
   
   //MARK: - RX Setup
 
+  private func setupCardImageDisplay() {
+    cardType
+    .asObservable()
+      .subscribe(onNext: {
+        cardType in
+        self.creditCardImageView.image = cardType.image
+      })
+    .addDisposableTo(disposeBag)
+  }
+  
+  private func setupTextChangeHandling() {
+    let creditCardValid = creditCardNumberTextField
+      .rx
+      .text
+      .throttle(throttleInterval, scheduler: MainScheduler.instance)
+      .map {self.validate(cardText: $0) }
+    
+    creditCardValid
+      .subscribe(onNext: {self.creditCardNumberTextField.valid = $0})
+      .addDisposableTo(disposeBag)
+    
+    
+  }
   
 
   //MARK: - Validation methods
