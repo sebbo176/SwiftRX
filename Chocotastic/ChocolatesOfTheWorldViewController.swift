@@ -68,8 +68,8 @@ class ChocolatesOfTheWorldViewController: UIViewController {
   
   private func setupCellTapHandling() {
     tableView
-    .rx
-    .modelSelected(Chocolate.self)
+      .rx
+      .modelSelected(Chocolate.self)
       .subscribe(onNext: {
         chocolate in
         ShoppingCart.sharedCart.chocolates.value.append(chocolate)
@@ -78,7 +78,7 @@ class ChocolatesOfTheWorldViewController: UIViewController {
           self.tableView.deselectRow(at: selectedRowIndexPath, animated: true)
         }
       })
-    .addDisposableTo(disposeBag)
+      .addDisposableTo(disposeBag)
   }
 }
 
